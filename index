@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Fejlfindings-simulator</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #f4f4f4; margin-bottom: 20px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin: 5px; }
+        .feedback { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>📟 Flaskemaskine: Træningsmodul</h1>
+    
+    <div class="card" id="spil-område">
+        <h3>Live Scenarie</h3>
+        <p id="scenarie">Tryk på knappen for at modtage et alarmkald...</p>
+        <button onclick="nytScenarie()">Generer Nyt Scenarie</button>
+    </div>
+
+    <div class="card" id="dialog-område" style="display:none;">
+        <h3>💬 Dialog med Tekniker</h3>
+        <p id="spørgsmål"></p>
+        <div id="svarmuligheder"></div>
+        <p id="feedback" class="feedback"></p>
+    </div>
+
+    <script>
+        const fejlData = [
+            {kode: "1xx", tekst: "Motoroverbelastning", spørgsmål: "Tekniker: 'Maskinen stopper. Hvad er alarmkoden?'", svarmuligheder: ["'Det ved jeg ikke'", "'ALM-102: Termofejl'", "'Den blinker rødt'"], rigtig: 1},
+            {kode: "2xx", tekst: "Sensorfejl", spørgsmål: "Tekniker: 'Sensorfejl rapporteret. Er sensoren ren?'", svarmuligheder: ["'Jeg har ikke tjekket'", "'Ja, jeg har renset den'", "'Den sidder fast'"], rigtig: 1},
+            {kode: "3xx", tekst: "Positioneringsfejl", spørgsmål: "Tekniker: 'Robotten stopper. Er koordinaterne nulstillet?'", svarmuligheder: ["'Ja, jeg har kørt en genstart'", "'Hvad er koordinater?'", "'Jeg prøver bare at trykke på start igen'"], rigtig: 0}
+        ];
+
+        let aktuelFejl;
+
+        function nytScenarie() {
+            aktuelFejl = fejlData[Math.floor(Math.random() * fejlData.length)];
+            document.getElementById('scenarie').innerText = `Alarm detekteret: ${aktuelFejl.tekst} (${aktuelFejl.kode})`;
+            document.getElementById('dialog-område').style.display = 'block';
+            document.getElementById('spørgsmål').innerText = aktuelFejl.spørgsmål;
+            document.getElementById('feedback').innerText = '';
+            
+            const div = document.getElementById('svarmuligheder');
+            div.innerHTML = '';
+            aktuelFejl.svarmuligheder.forEach((tekst, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = tekst;
+                btn.onclick = () => tjekSvar(index);
+                div.appendChild(btn);
+            });
+        }
+
+        function tjekSvar(valgtIndex) {
+            if(valgtIndex === aktuelFejl.rigtig) {
+                document.getElementById('feedback').innerText = "✅ Godt svaret! Teknikeren kan nu arbejde videre.";
+            } else {
+                document.getElementById('feedback').innerText = "❌ Prøv igen. Hvad ville en professionel operatør sige?";
+            }
+        }
+    </script>
+</body>
+</html>
